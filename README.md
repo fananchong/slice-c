@@ -44,3 +44,9 @@ int main()
 	return 0;
 }
 ```
+
+## TODO
+
+1. std::move
+2. range-based
+3. for
