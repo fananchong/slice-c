@@ -13,7 +13,9 @@ class slice
 public:
 	slice(std::initializer_list<T> array_)
 	{
-		makeslice(slice_array<T>(array_.begin(), array_.size()), array_.size());
+		array = slice_array<T>(array_.begin(), array_.size());
+		begin = 0;
+		end = array_.size();
 	}
 
 	slice operator[](const slice_index& si) const
@@ -32,23 +34,15 @@ public:
 private:
 	slice() : begin(0), end(0) {}
 
-	void makeslice(const slice_array<T>& array_, int len_)
-	{
-		array = array_;
-		begin = 0;
-		end = len_;
-	}
-
 	slice_array<T> array;
 	size_t begin;
 	size_t end;
 
-	template<typename T> friend std::ostream& operator<<(std::ostream&, const slice<T>&);
-
 	template<typename T> friend slice<T>& append(slice<T>& s, std::initializer_list<T> array_);
 	template<typename T> friend slice<T>& append(slice<T>& s1, const slice<T>& s2);
-	template<typename T> friend slice<T>& remove(slice<T>& s, const slice_literals& si);
-	template<typename T> friend slice<T>& remove(slice<T>& s, const slice_literals& si_begin, const slice_literals& si_end);
+	template<typename T> friend slice<T>& remove(slice<T>& s, const size_t si);
+	template<typename T> friend slice<T>& remove(slice<T>& s, const size_t si_begin, const size_t si_end);
+	template<typename T> friend std::ostream& operator<<(std::ostream&, const slice<T>&);
 };
 
 template<typename T>
@@ -68,9 +62,9 @@ slice<T>& append(slice<T>& s1, const slice<T>& s2)
 }
 
 template<typename T>
-slice<T>& remove(slice<T>& s, const slice_literals& si)
+slice<T>& remove(slice<T>& s, const size_t si)
 {
-	auto index = s.begin + si.begin;
+	auto index = s.begin + si;
 	if (index >= s.end)
 	{
 		return s;
@@ -80,11 +74,11 @@ slice<T>& remove(slice<T>& s, const slice_literals& si)
 	return s;
 }
 
-template<typename T> slice<T>& remove(slice<T>& s, const slice_literals& si_begin, const slice_literals& si_end)
+template<typename T> slice<T>& remove(slice<T>& s, const size_t si_begin, const size_t si_end)
 {
 	static slice<T> empty;
-	auto begin = s.begin + si_begin.begin;
-	auto end = (std::min)(s.begin + si_end.begin, s.end);
+	auto begin = s.begin + si_begin;
+	auto end = (std::min)(s.begin + si_end, s.end);
 
 	if (begin >= end)
 	{
