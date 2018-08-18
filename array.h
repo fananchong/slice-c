@@ -7,7 +7,7 @@ class slice_array
 {
 public:
 	slice_array()
-		: data(nullptr)
+		: data(std::make_shared<std::vector<T>>())
 	{
 
 	}
